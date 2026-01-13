@@ -54,7 +54,14 @@ const Login = () => {
             </h2>
           </div>
 
-          {error && <EmptyState message={error} sign="!" />}
+          {error && (
+            <div className="mb-6 flex items-center gap-3 rounded-2xl bg-red-50 p-4 text-xs font-black uppercase tracking-widest text-red-600 border border-red-100">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-white font-bold">
+                !
+              </span>
+              {error}
+            </div>
+          )}
 
           <form
             onSubmit={(e) => {

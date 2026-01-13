@@ -79,7 +79,11 @@ const Register = () => {
             </h2>
           </div>
 
-          {error && <EmptyState message={error} sign="⚠️" />}
+          {error && (
+            <div className="mb-6 rounded-2xl bg-red-50 p-4 text-xs font-bold text-red-600 border border-red-100 ">
+              ⚠️ {error}
+            </div>
+          )}
 
           <form onSubmit={handleRegister} className="space-y-5">
             <FormInput
@@ -146,7 +150,7 @@ const Register = () => {
               </div>
             </div>
 
-            <Button loading={loading} className="w-full" variant="submit">
+            <Button loading={loading} className="w-full" type="submit">
               Registruj Tim
             </Button>
           </form>

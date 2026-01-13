@@ -25,6 +25,8 @@ const Dogadjaji = () => {
     loading,
     paginationMeta,
     setCurrentPage,
+    searchTerm,
+    setSearchTerm,
     filters,
     setFilters,
     toggleFavorite,
@@ -69,10 +71,8 @@ const Dogadjaji = () => {
             <FormInput
               label="Pretraži po nazivu"
               placeholder="Unesite naziv..."
-              value={filters.naziv}
-              onChange={(e) =>
-                setFilters({ ...filters, naziv: e.target.value })
-              }
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
 
             {userRole === "tim" && (

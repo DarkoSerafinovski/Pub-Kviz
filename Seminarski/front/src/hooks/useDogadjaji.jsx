@@ -7,6 +7,15 @@ export const useDogadjaji = (sezonaId, initialFetchUrl) => {
   const [paginationMeta, setPaginationMeta] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({ naziv: "", omiljeni: false });
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setFilters((prev) => ({ ...prev, naziv: searchTerm }));
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
   const fetchDogadjaji = useCallback(async () => {
     setLoading(true);
@@ -65,6 +74,8 @@ export const useDogadjaji = (sezonaId, initialFetchUrl) => {
     setCurrentPage,
     filters,
     setFilters,
+    searchTerm,
+    setSearchTerm,
     toggleFavorite,
     refresh: fetchDogadjaji,
   };
