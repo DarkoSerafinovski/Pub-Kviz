@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
 import FormInput from "../components/FormInput";
-import EmptyState from "../components/EmptyState";
 import Button from "../components/Button";
 
 const Login = () => {
