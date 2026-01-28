@@ -98,7 +98,7 @@ const Login = () => {
               type="button"
               onClick={() =>
                 handleLogin({
-                  email: "gledalac.gmail.com",
+                  email: "gledalac@gmail.com",
                   password: "gledalac123",
                 })
               }
