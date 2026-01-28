@@ -8,7 +8,6 @@ const api = axios.create({
   },
 });
 
-// PRESRETAČ: Automatski dodaje token u svaki zahtev ako on postoji u localStorage
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {

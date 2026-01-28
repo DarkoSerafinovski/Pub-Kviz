@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import PageHeader from "../components/PageHeader";
-import BackButton from "../components/BackButton";
 import Loader from "../components/Loader";
 import DataTable from "../components/DataTable";
 import TeamRow from "../components/TeamRow";
 import EmptyState from "../components/EmptyState";
+import Button from "../components/Button";
 
 const RangListaSezone = () => {
   const { id } = useParams();
   const [podaci, setPodaci] = useState([]);
   const [sezonaInfo, setSezonaInfo] = useState("");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRangLista = async () => {
@@ -39,9 +40,9 @@ const RangListaSezone = () => {
       <Navbar />
 
       <div className="p-8 md:p-12 w-full max-w-7xl mx-auto">
-        <div className="mb-8">
-          <BackButton />
-        </div>
+        <Button type="secondary" onClick={() => navigate(-1)}>
+          Nazad
+        </Button>
 
         <PageHeader
           title="Generalni"
