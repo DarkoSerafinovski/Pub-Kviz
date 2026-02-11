@@ -1,14 +1,18 @@
-FROM node:18-alpine
+FROM node:18-alpine AS build
 WORKDIR /app
-
 
 COPY package.json package-lock.json ./
 RUN npm install
 
-
 COPY . .
+RUN npm run build
 
-EXPOSE 3000
+FROM nginx:stable-alpine
 
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/build /usr/share/nginx/html
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
-CMD ["npm", "start"]
+EXPOSE 80
+CMD ["/docker-entrypoint.sh"]

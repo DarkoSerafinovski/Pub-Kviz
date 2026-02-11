@@ -11,19 +11,9 @@ trait UploadUtil
         
     $sanitizedNaziv = preg_replace('/[^a-zA-Z0-9_-]/', '_', $naziv);
     $extension = $file->getClientOriginalExtension();
-    $filename = $sanitizedNaziv . '.' . $extension;
-
-   
-    $path = 'app/' . $sanitizedNaziv;
-
-    
-    if (!Storage::exists($path)) {
-        Storage::makeDirectory($path);
-    }
-
-    $pathFile = $file->storeAs($path, $filename,'public');
-
-    
-    return Storage::url($pathFile);
+    $filename = 'logo_' . time() . '.' . $extension; 
+    $path = 'teams/' . $sanitizedNaziv;
+    $pathFile = $file->storeAs($path, $filename, "s3");
+    return Storage::disk('s3')->url($pathFile);
     }
 }
