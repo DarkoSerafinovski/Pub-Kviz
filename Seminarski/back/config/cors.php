@@ -21,7 +21,7 @@ return [
 
     'allowed_origins' => [
         'http://localhost:3000',                  
-    'https://pub_kviz_app_front.onrender.com'  
+    'https://pub-kviz-app-front.onrender.com'  
     ],
 
     'allowed_origins_patterns' => [],
