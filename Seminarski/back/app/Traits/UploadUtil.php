@@ -16,6 +16,8 @@ trait UploadUtil
     Log::info('Uploading file: ' . $filename . ' to path: ' . $path);
     $pathFile = $file->storeAs($path, $filename, "s3");
     Log::info('File uploaded to S3 with path: ' . $pathFile);
-    return Storage::disk('s3')->url($pathFile);
+    $url = Storage::disk('s3')->url($pathFile);
+    Log::info('File URL: ' . $url);
+    return $url;
     }
 }
