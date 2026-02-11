@@ -97,16 +97,15 @@ class AuthController extends Controller
  
     public function login(Request $request)
 {
-    \Log::info('Login attempt: ', ['email' => $request->email, 'password' => $request->password]);
   
     if(!Auth::attempt($request->only('email','password'))){
         return response()->json(['success'=> false]);
     }
 
-    // Povlačimo korisnika
+  
     $user = User::where('email', $request['email'])->firstOrFail();
 
-    // TOKEN
+  
     $token = $user->createToken('auth_token')->plainTextToken;
 
     $tim = \DB::table('timovi')->where('user_id', $user->id)->first();
@@ -115,7 +114,7 @@ class AuthController extends Controller
     return response()->json([
         'success' => true,
         'data' => $user, 
-        'tim_id' => $timId, // Šaljemo ga kao poseban ključ radi lakšeg hvatanja
+        'tim_id' => $timId, 
         'access_token' => $token, 
         'token_type' => 'Bearer',
         'role' => $user->role
