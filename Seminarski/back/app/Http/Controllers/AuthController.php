@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\UploadUtil;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 class AuthController extends Controller
 
 {
