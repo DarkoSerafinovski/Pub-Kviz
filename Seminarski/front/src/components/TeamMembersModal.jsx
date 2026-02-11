@@ -22,6 +22,8 @@ const TeamMembersModal = ({
     const handleMessage = async (event) => {
       console.log("Primljena poruka:", event);
       const backendOrigin = new URL(window._env_?.BACKEND_URL).origin;
+      console.log("Očekivani origin:", backendOrigin);
+      console.log("Poruka dolazi sa origin:", event.origin);
       if (event.origin !== backendOrigin) return;
 
       if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
