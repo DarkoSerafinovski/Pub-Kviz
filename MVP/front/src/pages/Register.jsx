@@ -37,7 +37,6 @@ const Register = () => {
     data.append("email", formData.email);
     data.append("password", formData.password);
     data.append("role", formData.role);
-    data.append("password_confirmation", formData.password_confirmation);
 
     if (logoFile) {
       data.append("logo", logoFile);
@@ -93,6 +92,7 @@ const Register = () => {
               type="text"
               required
               placeholder="Unesite Naziv Tima..."
+              value={formData.naziv}
               onChange={(e) =>
                 setFormData({ ...formData, naziv: e.target.value })
               }
@@ -103,6 +103,7 @@ const Register = () => {
               type="email"
               required
               placeholder="Unesite Email Adresu..."
+              value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
@@ -114,6 +115,7 @@ const Register = () => {
                 type="password"
                 required
                 placeholder="Lozinka... "
+                value={formData.password}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
@@ -124,6 +126,7 @@ const Register = () => {
                 type="password"
                 required
                 placeholder="Ponovi..."
+                value={formData.password_confirmation}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -142,6 +145,8 @@ const Register = () => {
                   type="file"
                   accept="image/*"
                   className="absolute inset-0 cursor-pointer opacity-0"
+                  required
+                  value={logoFile}
                   onChange={(e) => setLogoFile(e.target.files[0])}
                 />
                 <span className="text-xs font-bold text-gray-400">

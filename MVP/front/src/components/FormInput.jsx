@@ -61,6 +61,7 @@ const FormInput = ({
       </label>
     );
   }
+
   return (
     <div className={`space-y-2 ${className}`}>
       {label && (

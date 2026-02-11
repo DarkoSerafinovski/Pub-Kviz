@@ -98,7 +98,7 @@ const Login = () => {
               type="button"
               onClick={() =>
                 handleLogin({
-                  email: "gledalac.gmail.com",
+                  email: "gledalac@gmail.com",
                   password: "gledalac123",
                 })
               }
@@ -107,6 +107,7 @@ const Login = () => {
               Nastavi kao gost
             </button>
           </form>
+
           <div className="mt-8 text-center">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-tight">
               Nemate nalog?{" "}

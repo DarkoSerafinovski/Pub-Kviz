@@ -48,7 +48,6 @@ const RangListaSezone = () => {
 
         {podaci.length > 0 ? (
           <div className="space-y-4">
-            {/* Tabela sa rezultatima */}
             <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -78,10 +77,10 @@ const RangListaSezone = () => {
                             index === 0
                               ? "bg-yellow-400 text-yellow-900"
                               : index === 1
-                              ? "bg-gray-300 text-gray-700"
-                              : index === 2
-                              ? "bg-orange-300 text-orange-900"
-                              : "bg-gray-50 text-gray-400"
+                                ? "bg-gray-300 text-gray-700"
+                                : index === 2
+                                  ? "bg-orange-300 text-orange-900"
+                                  : "bg-gray-50 text-gray-400"
                           }
                         `}
                         >
@@ -96,7 +95,7 @@ const RangListaSezone = () => {
                             className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
                             onError={(e) =>
                               (e.target.src = "https://via.placeholder.com/150")
-                            } // Fallback za sliku
+                            }
                           />
                           <span className="text-xl font-black uppercase tracking-tight group-hover:text-indigo-600 transition-colors">
                             {tim.naziv_tima}
