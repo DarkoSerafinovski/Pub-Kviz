@@ -93,6 +93,7 @@ class AuthController extends Controller
         
     } catch (\Exception $e) {
      
+    Log::error('Greška prilikom registracije: ' . $e->getMessage());
         return response()->json([
             'success' => false,
             'message' => 'Registracija nije uspesna. ' . $e->getMessage(),
