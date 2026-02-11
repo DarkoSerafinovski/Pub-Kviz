@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
 
+
 const TeamMembersModal = ({
   isOpen,
   onClose,
@@ -20,7 +21,8 @@ const TeamMembersModal = ({
   useEffect(() => {
     const handleMessage = async (event) => {
       console.log("Primljena poruka:", event);
-      if (event.origin !== window._env_?.BACKEND_URL) return;
+      const backendOrigin = new URL(window._env_?.BACKEND_URL).origin;
+      if (event.origin !== backendOrigin) return;
 
       if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
         const googleToken = event.data.token;
