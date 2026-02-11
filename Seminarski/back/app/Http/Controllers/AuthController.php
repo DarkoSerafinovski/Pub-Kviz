@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Traits\UploadUtil;
 use Illuminate\Support\Facades\DB;
 class AuthController extends Controller
+
 {
      use UploadUtil;
    public function register(Request $request)
@@ -51,6 +52,7 @@ class AuthController extends Controller
         DB::transaction(function () use ($request, &$user, &$token) {
             
         
+            Log::info('Validacija uspešna, kreiranje korisnika i tima počinje.');
             $user = User::create([
                 'username'=> $request->naziv,
                 'email'=> $request->email,
@@ -58,13 +60,14 @@ class AuthController extends Controller
                 'role'=>$request->role,
             ]);
 
+            Log::info('Korisnik kreiran sa ID: ' . $user->id);
            
             $team = Tim::create([
                 'naziv'=> $request->naziv,
                 'logo'=> $this->upload($request->file('logo'), $request->naziv),
                 'user_id'=> $user->id
             ]);
-
+            Log::info('Tim kreiran sa ID: ' . $team->id . ' za korisnika ID: ' . $user->id);
            
             $token = $user->createToken('auth_token')->plainTextToken;
 
