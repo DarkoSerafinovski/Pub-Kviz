@@ -74,101 +74,97 @@ class SezonaController extends Controller
     }
 
 
-    public function index(Request $request)
-    {
-        try {
-          
+  public function index(Request $request)
+{
+    try {
+        $query = Sezona::query();
 
-            $query = Sezona::query();
+        $filterPocetak = $request->input('pocetak');
+        $filterKraj = $request->input('kraj');
 
-            $filterPocetak = $request->input('pocetak');
-            $filterKraj = $request->input('kraj');
-            
-          
-            if ($filterPocetak || $filterKraj) {
+        if ($filterPocetak || $filterKraj) {
+            $query->where(function ($q) use ($filterPocetak, $filterKraj) {
                 
-                $query->where(function ($q) use ($filterPocetak, $filterKraj) {
-                    
-                    if ($filterPocetak) {
-                        $q->orWhere(function ($qPocetak) use ($filterPocetak) {
-                            $datum = date('Y-m-d', strtotime($filterPocetak));
-                            $godinaMesec = date('Y-m', strtotime($filterPocetak));
-                            $godina = date('Y', strtotime($filterPocetak));
-                            
-                            $qPocetak->where('pocetak', $datum) 
-                                     ->orWhere(DB::raw("DATE_FORMAT(pocetak, '%Y-%m')"), $godinaMesec) 
-                                     ->orWhere(DB::raw("YEAR(pocetak)"), $godina);
-                        });
-                    }
+                if ($filterPocetak) {
+                    $q->orWhere(function ($qPocetak) use ($filterPocetak) {
+                        $time = strtotime($filterPocetak);
+                        $datum = date('Y-m-d', $time);
+                        $mesec = date('m', $time);
+                        $godina = date('Y', $time);
+                        
+                        $qPocetak->where('pocetak', $datum) 
+                                 ->orWhere(function($sub) use ($godina, $mesec) {
+                                     $sub->whereYear('pocetak', $godina)
+                                         ->whereMonth('pocetak', $mesec);
+                                 })
+                                 ->orWhereYear('pocetak', $godina);
+                    });
+                }
 
-                    if ($filterKraj) {
-                        $q->orWhere(function ($qKraj) use ($filterKraj) {
-                            $datum = date('Y-m-d', strtotime($filterKraj));
-                            $godinaMesec = date('Y-m', strtotime($filterKraj));
-                            $godina = date('Y', strtotime($filterKraj));
-                            
-                            $qKraj->where('kraj', $datum) 
-                                  ->orWhere(DB::raw("DATE_FORMAT(kraj, '%Y-%m')"), $godinaMesec) 
-                                  ->orWhere(DB::raw("YEAR(kraj)"), $godina); 
-                        });
-                    }
-                });
-            }
-            
-         
-            if ($filterPocetak || $filterKraj) {
-                
-                $datumZaSortiranje = $filterPocetak ?? $filterKraj;
-                $godinaMesecZaSortiranje = date('Y-m', strtotime($datumZaSortiranje));
-                $godinaZaSortiranje = date('Y', strtotime($datumZaSortiranje));
-                
-                $kolonaZaSortiranje = $filterPocetak ? 'pocetak' : 'kraj';
-
-                $query->orderByRaw(
-                 
-                    "CASE WHEN {$kolonaZaSortiranje} = '{$datumZaSortiranje}' THEN 1 ELSE 4 END ASC"
-                )->orderByRaw(
-                   
-                    "CASE WHEN DATE_FORMAT({$kolonaZaSortiranje}, '%Y-%m') = '{$godinaMesecZaSortiranje}' THEN 2 ELSE 4 END ASC"
-                )->orderByRaw(
-                    
-                    "CASE WHEN YEAR({$kolonaZaSortiranje}) = '{$godinaZaSortiranje}' THEN 3 ELSE 4 END ASC"
-                )->orderBy($kolonaZaSortiranje, 'asc'); 
-            }
-            else {
-
-                 $query->orderBy('pocetak', 'desc');
-                 }
-            
-           
-            $sezone = $query->paginate(6);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Lista sezona uspešno učitana.',
-                'data' => SezonaResource::collection($sezone),
-                'meta' => [
-                    'total' => $sezone->total(),
-                    'per_page' => $sezone->perPage(),
-                    'current_page' => $sezone->currentPage(),
-                    'last_page' => $sezone->lastPage(),
-                ],
-            ], 200);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Greška pri validaciji unosa.',
-                'errors' => $e->errors(),
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Došlo je do greške prilikom obrade zahteva.',
-                'error' => $e->getMessage(),
-            ], 500);
+                if ($filterKraj) {
+                    $q->orWhere(function ($qKraj) use ($filterKraj) {
+                        $time = strtotime($filterKraj);
+                        $datum = date('Y-m-d', $time);
+                        $mesec = date('m', $time);
+                        $godina = date('Y', $time);
+                        
+                        $qKraj->where('kraj', $datum) 
+                              ->orWhere(function($sub) use ($godina, $mesec) {
+                                  $sub->whereYear('kraj', $godina)
+                                      ->whereMonth('kraj', $mesec);
+                              })
+                              ->orWhereYear('kraj', $godina); 
+                    });
+                }
+            });
         }
+
+        if ($filterPocetak || $filterKraj) {
+            $datumZaSortiranje = $filterPocetak ?? $filterKraj;
+            $time = strtotime($datumZaSortiranje);
+            $godina = date('Y', $time);
+            $mesec = date('m', $time);
+            
+            $kolona = $filterPocetak ? 'pocetak' : 'kraj';
+            $driver = DB::connection()->getDriverName();
+            
+            if ($driver === 'pgsql') {
+                $query->orderByRaw("CASE WHEN {$kolona}::date = ? THEN 1 ELSE 4 END ASC", [$datumZaSortiranje])
+                      ->orderByRaw("CASE WHEN TO_CHAR({$kolona}, 'YYYY-MM') = ? THEN 2 ELSE 4 END ASC", [date('Y-m', $time)])
+                      ->orderByRaw("CASE WHEN EXTRACT(YEAR FROM {$kolona}) = ? THEN 3 ELSE 4 END ASC", [$godina]);
+            } else {
+                $query->orderByRaw("CASE WHEN {$kolona} = ? THEN 1 ELSE 4 END ASC", [$datumZaSortiranje])
+                      ->orderByRaw("CASE WHEN DATE_FORMAT({$kolona}, '%Y-%m') = ? THEN 2 ELSE 4 END ASC", [date('Y-m', $time)])
+                      ->orderByRaw("CASE WHEN YEAR({$kolona}) = ? THEN 3 ELSE 4 END ASC", [$godina]);
+            }
+            
+            $query->orderBy($kolona, 'asc'); 
+        } else {
+            $query->orderBy('pocetak', 'desc');
+        }
+
+        $sezone = $query->paginate(6);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Lista sezona uspešno učitana.',
+            'data' => SezonaResource::collection($sezone),
+            'meta' => [
+                'total' => $sezone->total(),
+                'per_page' => $sezone->perPage(),
+                'current_page' => $sezone->currentPage(),
+                'last_page' => $sezone->lastPage(),
+            ],
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Došlo je do greške prilikom obrade zahteva.',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
     
 
     public function rangListaSezone(Request $request, $sezona_id)
