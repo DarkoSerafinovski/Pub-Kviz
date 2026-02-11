@@ -79,7 +79,9 @@ class AuthController extends Controller
             'success'=> true,
             'data'=> $user, 
             'access_token'=> $token, 
-            'token_type'=> 'Bearer'
+            'token_type'=> 'Bearer',
+            'tim_id' => $user ? $user->id : null,
+            'role' => $user->role
         ]);
 
     } catch (\Illuminate\Validation\ValidationException $e) {
