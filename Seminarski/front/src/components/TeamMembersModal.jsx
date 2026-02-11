@@ -19,6 +19,7 @@ const TeamMembersModal = ({
 
   useEffect(() => {
     const handleMessage = async (event) => {
+      console.log("Primljena poruka:", event);
       if (event.origin !== window._env_?.BACKEND_URL) return;
 
       if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
