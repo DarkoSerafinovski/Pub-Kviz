@@ -11,21 +11,63 @@ const TeamMembersModal = ({
   const [clanovi, setClanovi] = useState([]);
   const [sviClanovi, setSviClanovi] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showCalendarBtn, setShowCalendarBtn] = useState(false);
 
   const loggedInTimId = localStorage.getItem("tim_id");
   const isMyTeam = String(loggedInTimId) === String(timId);
   const canEdit = mode === "signup" || (isMyTeam && mode === "edit");
 
   useEffect(() => {
+    const handleMessage = async (event) => {
+      if (event.origin !== window._env_?.BACKEND_URL) return;
+
+      if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
+        const googleToken = event.data.token;
+        try {
+          setLoading(true);
+          await api.post("/google/store-event", {
+            dogadjaj_id: dogadjajId,
+            token: googleToken
+          });
+          alert("Događaj je uspešno dodat u vaš Google kalendar!");
+          setShowCalendarBtn(false); 
+        } catch (err) {
+          alert("Greška pri upisu u kalendar.");
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [dogadjajId]);
+
+  const handleGoogleCalendar = async () => {
+    try {
+      const res = await api.get(`/google/auth-url?dogadjaj_id=${dogadjajId}`);
+      console.log(res);
+      const width = 500, height = 600;
+      const left = (window.innerWidth / 2) - (width / 2);
+      const top = (window.innerHeight / 2) - (height / 2);
+      window.open(res.data.url, "GoogleAuth", `width=${width},height=${height},top=${top},left=${left}`);
+    } catch (e) {
+      alert("Nije moguće dobiti Google Auth URL.");
+    }
+  };
+
+
+  useEffect(() => {
     if (isOpen) {
       fetchSviMoguciClanovi();
+      setShowCalendarBtn(isMyTeam && mode !== "signup"); 
       if (mode === "signup") {
         setClanovi([{ id: "", ime: "", prezime: "", isNew: false }]);
       } else {
         fetchTrenutniClanovi();
       }
     }
-  }, [isOpen, mode, dogadjajId, timId]);
+  }, [isOpen, mode, dogadjajId, timId, isMyTeam]);
 
   const fetchSviMoguciClanovi = async () => {
     try {
@@ -91,6 +133,7 @@ const TeamMembersModal = ({
       if (mode === "signup") {
         await api.post("/dogadjaji/prijava", payload);
         alert("Uspešna prijava!");
+        setShowCalendarBtn(true);
       } else {
         await api.put(
           `/tim/dogadjaj/${dogadjajId}/promena-clanova-za-dogadjaj`,
@@ -98,7 +141,7 @@ const TeamMembersModal = ({
         );
         alert("Postava ažurirana!");
       }
-      onClose();
+      if (mode !== "signup") onClose(); 
     } catch (e) {
       alert(e.response?.data?.message || "Greška pri čuvanju.");
     } finally {
@@ -131,6 +174,18 @@ const TeamMembersModal = ({
             </div>
           ) : (
             <>
+              {showCalendarBtn && (
+                <button
+                  onClick={handleGoogleCalendar}
+                  className="w-full mb-4 p-4 bg-white border-2 border-red-100 rounded-[2rem] flex items-center justify-center gap-3 hover:bg-red-50 transition-all group"
+                >
+                  <span className="text-red-500 group-hover:scale-110 transition-transform">📅</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-red-500">
+                    Dodaj u Google Calendar
+                  </span>
+                </button>
+              )}
+
               {clanovi.map((clan, index) => (
                 <div
                   key={index}
