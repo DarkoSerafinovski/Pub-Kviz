@@ -220,13 +220,13 @@ class DogadjajController extends Controller
         }
 
         if ($filterDatum) {
-            $query->whereDate('"datumOdrzavanja"', $filterDatum);
+            $query->whereDate('datumOdrzavanja', $filterDatum);
         }
 
         $now = Carbon::now()->toDateTimeString();
 
         $query->orderByRaw("CASE WHEN \"datumOdrzavanja\" >= ? THEN 1 ELSE 2 END ASC", [$now])
-              ->orderBy('"datumOdrzavanja"', 'asc');
+              ->orderBy('datumOdrzavanja', 'asc');
         
         $dogadjaji = $query->paginate(5);
 
