@@ -23,6 +23,7 @@ const Button = ({
       "bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white shadow-sm",
     outline:
       "border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white",
+    empty: "bg-transparent",
   };
 
   const padding = variant === "secondary" ? "py-4 px-8" : "py-5 px-8";

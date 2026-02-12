@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import api from "../api";
 import Navbar from "../components/Navbar";
 import PageHeader from "../components/PageHeader";
 import Loader from "../components/Loader";
 import FormInput from "../components/FormInput";
 import EmptyState from "../components/EmptyState";
 import Button from "../components/Button";
+import { useDogadjaji } from "../hooks/useDogadjaji";
 
 const KreiranjeDogadjaja = () => {
   const { id } = useParams();
-  const location = useLocation();
+  const { state } = useLocation();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const periodText = location.state?.period || "";
+  const { createDogadjaj, error, loading } = useDogadjaji(id);
+
+  const periodText = state?.period || "";
 
   const [formData, setFormData] = useState({
     naziv: "",
@@ -25,24 +25,7 @@ const KreiranjeDogadjaja = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      await api.post("/dogadjaji", formData);
-      navigate(`/sezone/${id}/dogadjaji`, { state: { period: periodText } });
-    } catch (err) {
-      if (err.response?.data?.errors) {
-        const firstError = Object.values(err.response.data.errors)[0][0];
-        setError(firstError);
-      } else {
-        setError(
-          err.response?.data?.message || "Došlo je do greške. Pokušajte ponovo."
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
+    createDogadjaj(formData, periodText);
   };
 
   return (

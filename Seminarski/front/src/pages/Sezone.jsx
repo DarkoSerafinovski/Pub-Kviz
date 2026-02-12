@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api";
 import FormInput from "../components/FormInput";
 import SezonaCard from "../components/SezonaCard";
 import Navbar from "../components/Navbar";
@@ -9,35 +8,28 @@ import Loader from "../components/Loader";
 import Pagination from "../components/Pagination";
 import EmptyState from "../components/EmptyState";
 import Button from "../components/Button";
+import { useSezone } from "../hooks/useSezone";
+import { useAuth } from "../hooks/useAuth";
 
 const Sezone = () => {
-  const [sezone, setSezone] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ pocetak: "", kraj: "" });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [paginationMeta, setPaginationMeta] = useState(null);
   const navigate = useNavigate();
 
-  const isAdmin = localStorage.getItem("role") === "moderator";
+  const {
+    sezone,
+    loading,
+    filters,
+    updateFilters,
+    paginationMeta,
+    currentPage,
+    setCurrentPage,
+    fetchSezone,
+  } = useSezone();
+
+  const { role } = useAuth();
+
+  const isAdmin = role === "moderator";
 
   useEffect(() => {
-    const fetchSezone = async () => {
-      setLoading(true);
-      try {
-        const response = await api.get("/sezone", {
-          params: {
-            ...filters,
-            page: currentPage,
-          },
-        });
-        setSezone(response.data.data);
-        setPaginationMeta(response.data.meta);
-      } catch (error) {
-        console.error("Greška pri učitavanju:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchSezone();
   }, [filters, currentPage]);
 
@@ -67,20 +59,16 @@ const Sezone = () => {
               <FormInput
                 label="Od datuma"
                 type="date"
-                onChange={(e) => {
-                  setFilters({ ...filters, pocetak: e.target.value });
-                  setCurrentPage(1);
-                }}
+                value={filters.pocetak}
+                onChange={(e) => updateFilters({ pocetak: e.target.value })}
               />
             </div>
             <div className="w-40">
               <FormInput
                 label="Do datuma"
                 type="date"
-                onChange={(e) => {
-                  setFilters({ ...filters, kraj: e.target.value });
-                  setCurrentPage(1);
-                }}
+                value={filters.kraj}
+                onChange={(e) => updateFilters({ kraj: e.target.value })}
               />
             </div>
           </div>

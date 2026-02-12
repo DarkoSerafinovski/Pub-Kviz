@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import api from "../api";
+import { Link } from "react-router-dom";
 import FormInput from "../components/FormInput";
-import EmptyState from "../components/EmptyState";
 import Button from "../components/Button";
+import { useAuth } from "../hooks/useAuth";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -14,59 +13,20 @@ const Register = () => {
     role: "tim",
   });
   const [logoFile, setLogoFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+
+  const { register, loading, error, setError } = useAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError("");
 
     if (formData.password !== formData.password_confirmation) {
       return setError("Lozinke se ne poklapaju!");
     }
-
     if (!logoFile) {
       return setError("Logo tima je obavezan.");
     }
 
-    setLoading(true);
-
-    const data = new FormData();
-    data.append("naziv", formData.naziv);
-    data.append("email", formData.email);
-    data.append("password", formData.password);
-    data.append("role", formData.role);
-    data.append("password_confirmation", formData.password_confirmation);
-    data.append("logo", logoFile);
-
-    try {
-      const response = await api.post("/register", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      const result = response.data;
-
-      if (result.success) {
-        localStorage.setItem("token", result.access_token);
-        localStorage.setItem("role", result.data.role);
-        localStorage.setItem("username", result.data.username);
-
-        if (result.tim_id) {
-          localStorage.setItem("tim_id", result.tim_id);
-        }
-
-        alert("Uspešna registracija tima!");
-        navigate("/sezone");
-      }
-    } catch (err) {
-      const serverError = err.response?.data?.errors
-        ? Object.values(err.response.data.errors)[0][0]
-        : "Došlo je do greške prilikom registracije.";
-      setError(serverError);
-    } finally {
-      setLoading(false);
-    }
+    await register(formData, logoFile);
   };
 
   return (

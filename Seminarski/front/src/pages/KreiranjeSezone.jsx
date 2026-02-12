@@ -1,41 +1,25 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api";
 import Navbar from "../components/Navbar";
 import PageHeader from "../components/PageHeader";
 import Loader from "../components/Loader";
 import FormInput from "../components/FormInput";
 import EmptyState from "../components/EmptyState";
 import Button from "../components/Button";
+import { useSezone } from "../hooks/useSezone";
 
 const KreiranjeSezone = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { createSezona, loading, error } = useSezone();
 
   const [formData, setFormData] = useState({
     pocetak: "",
     kraj: "",
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      await api.post("/sezone", formData);
-      navigate("/sezone");
-    } catch (err) {
-      if (err.response?.status === 422) {
-        const firstError = Object.values(err.response.data.errors)[0][0];
-        setError(firstError);
-      } else {
-        setError("Došlo je do greške prilikom kreiranja sezone.");
-      }
-    } finally {
-      setLoading(false);
-    }
+    createSezona(formData);
   };
 
   return (

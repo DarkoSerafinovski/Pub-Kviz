@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
@@ -11,6 +11,7 @@ import TeamMembersModal from "../components/TeamMembersModal";
 import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
 import { useDogadjaji } from "../hooks/useDogadjaji";
+import { useAuth } from "../hooks/useAuth";
 
 const Dogadjaji = () => {
   const { id } = useParams();
@@ -24,16 +25,23 @@ const Dogadjaji = () => {
     dogadjaji,
     loading,
     paginationMeta,
+    currentPage,
     setCurrentPage,
     searchTerm,
     setSearchTerm,
     filters,
-    setFilters,
+    updateFilters,
     toggleFavorite,
-  } = useDogadjaji(id, state?.fetchUrl);
+    fetchDogadjaji,
+  } = useDogadjaji(id);
 
-  const userRole = localStorage.getItem("role");
-  const isAdmin = userRole === "moderator";
+  const { role, loggedTimId } = useAuth();
+
+  const isAdmin = role === "moderator";
+
+  useEffect(() => {
+    fetchDogadjaji(state?.dogadjaji);
+  }, [filters, currentPage, id]);
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -75,14 +83,12 @@ const Dogadjaji = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
 
-            {userRole === "tim" && (
+            {role === "tim" && (
               <FormInput
                 label="Samo Omiljeni"
                 type="toggle"
                 checked={filters.omiljeni}
-                onChange={() =>
-                  setFilters({ ...filters, omiljeni: !filters.omiljeni })
-                }
+                onChange={() => updateFilters({ omiljeni: !filters.omiljeni })}
               />
             )}
           </div>
@@ -98,7 +104,7 @@ const Dogadjaji = () => {
                   <DogadjajCard
                     key={d.id}
                     d={d}
-                    userRole={userRole}
+                    userRole={role}
                     onSignupClick={() => {
                       setSelectedDogadjajId(d.id);
                       setIsSignUpOpen(true);
@@ -117,10 +123,9 @@ const Dogadjaji = () => {
       </div>
       {isSignUpOpen && (
         <TeamMembersModal
-          isOpen={isSignUpOpen}
           onClose={() => setIsSignUpOpen(false)}
           dogadjajId={selectedDogadjajId}
-          timId={localStorage.getItem("tim_id")}
+          timId={loggedTimId}
           mode="signup"
         />
       )}
