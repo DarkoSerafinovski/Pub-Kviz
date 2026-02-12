@@ -25,7 +25,8 @@ const KreiranjeDogadjaja = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    createDogadjaj(formData, periodText);
+    if (createDogadjaj(formData))
+      navigate(`/sezone/${id}/dogadjaji`, { state });
   };
 
   return (

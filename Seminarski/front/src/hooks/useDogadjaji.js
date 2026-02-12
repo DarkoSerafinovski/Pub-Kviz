@@ -68,15 +68,13 @@ export const useDogadjaji = (sezonaId) => {
     }
   };
 
-  const createDogadjaj = async (formData, periodText) => {
+  const createDogadjaj = async (formData) => {
     setLoading(true);
     setError("");
 
     try {
       await api.post("/dogadjaji", formData);
-      navigate(`/sezone/${sezonaId}/dogadjaji`, {
-        state: { period: periodText },
-      });
+      return true;
     } catch (err) {
       if (err.response?.data?.errors) {
         const firstError = Object.values(err.response.data.errors)[0][0];
@@ -87,6 +85,7 @@ export const useDogadjaji = (sezonaId) => {
             "Došlo je do greške. Pokušajte ponovo.",
         );
       }
+      return false;
     } finally {
       setLoading(false);
     }
