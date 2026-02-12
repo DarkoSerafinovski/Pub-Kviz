@@ -134,6 +134,7 @@ export const useDogadjaji = (sezonaId) => {
 
   return {
     dogadjaji,
+    error,
     loading,
     paginationMeta,
     currentPage,

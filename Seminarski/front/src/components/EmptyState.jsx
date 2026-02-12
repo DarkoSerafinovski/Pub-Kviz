@@ -1,11 +1,11 @@
 const EmptyState = ({ message, sign = "" }) => (
-  <div className="bg-white rounded-[3rem] p-20 text-center border-2 border-dashed border-gray-100 italic text-gray-400 font-bold">
+  <div className="flex items-center gap-3 py-4 px-2 text-gray-500 font-medium italic">
     {sign && (
-      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-white font-bold">
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-600 text-[10px] text-white font-black not-italic">
         {sign}
       </span>
     )}
-    {message}
+    <p>{message}</p>
   </div>
 );
 

@@ -57,7 +57,7 @@ const KreiranjeDogadjaja = () => {
 
         <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-gray-100 mt-8">
           <form onSubmit={handleSubmit} className="space-y-8">
-            {error && <EmptyState message={error} />}
+            {error && <EmptyState message={error} sign="!" />}
 
             <div className="space-y-6">
               <FormInput

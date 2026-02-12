@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
 
 export const useSezone = () => {
   const [sezone, setSezone] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [filters, setFilters] = useState({ pocetak: "", kraj: "" });
   const [currentPage, setCurrentPage] = useState(1);
@@ -71,6 +71,7 @@ export const useSezone = () => {
   return {
     sezone,
     loading,
+    error,
     filters,
     updateFilters,
     currentPage,
