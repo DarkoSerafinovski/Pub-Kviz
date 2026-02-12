@@ -1,25 +1,14 @@
-import React, { useState, useEffect } from "react";
-import api from "../api";
+import React, { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import PageHeader from "../components/PageHeader";
 import Loader from "../components/Loader";
 import EmptyState from "../components/EmptyState";
+import { useStats } from "../hooks/useStats";
 
 const StatistikaTima = () => {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { stats, loading, fetchStats } = useStats();
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await api.get("/timovi/statistika");
-        setStats(res.data.data);
-      } catch (err) {
-        console.error("Greška pri učitavanju statistike:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchStats();
   }, []);
 
@@ -121,8 +110,6 @@ const StatistikaTima = () => {
     </div>
   );
 };
-
-/* POMOĆNE KOMPONENTE ZA ČISTIJI KOD */
 
 const StatCard = ({ title, value, color }) => (
   <div
